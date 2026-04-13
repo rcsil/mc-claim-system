@@ -17,6 +17,14 @@ export const CLAN_CLAIM_OUTLINE_INTERVAL_TICKS = 10;
 export const CLAN_CLAIM_OUTLINE_MAX_DISTANCE = 64;
 export const CLAN_CLAIM_OUTLINE_MAX_PARTICLES = 160;
 export const CLAN_CLAIM_OUTLINE_Y_OFFSET = 0.15;
+export const CLAN_POINTS_PROPERTY = "clan:points";
+export const CLAN_ENTITY_KILL_POINTS = 1;
+export const CLAN_PLAYER_KILL_POINTS = 5;
+export const CLAN_PLAYER_DEATH_POINTS_LOSS = 5;
+export const CLAN_POINTS_LEADERBOARD_LIMIT = 5;
+export const CLAN_POINTS_SCOREBOARD_OBJECTIVE_ID = "clan_points_top";
+export const CLAN_POINTS_SCOREBOARD_DISPLAY_NAME = "Clan Points";
+export const CLAN_POINTS_SCOREBOARD_REFRESH_TICKS = 20 * 10;
 
 export const INTERACTIVE_BLOCK_IDS = new Set([
   "minecraft:crafting_table",

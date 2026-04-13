@@ -9,6 +9,15 @@ Minecraft Bedrock creates a shortcut from the command name after the namespace. 
 
 Use `/clan` or `/clan info` to show your clan coordinates. If you are close to the claim, flame particles are displayed around the protected area.
 
+Use `/clan top` to show the top 5 players and top 5 clans by points. Use `/clan points` to show your own points and your clan total.
+
+Point rules:
+
+- Killing a non-player entity gives 1 point.
+- Killing a player gives 5 points.
+- Dying removes 5 points, but a player cannot go below 0.
+- Clan points are calculated as the sum of the current members' points.
+
 For worlds with cheats disabled, the command registration must include:
 
 - `permissionLevel: CustomCommandPermissionLevel.Any`

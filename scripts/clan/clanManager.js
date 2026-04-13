@@ -1,18 +1,21 @@
 import { system, world } from "@minecraft/server";
 import * as mc from "@minecraft/server";
 
-import { CLAN_PENDING_TTL_TICKS } from "./config.js";
+import { CLAN_PENDING_TTL_TICKS, CLAN_POINTS_SCOREBOARD_REFRESH_TICKS } from "./config.js";
 import { executeClanCommand } from "./commands/clanCommands.js";
 import { protectBlockInteraction, protectBreak, protectEntityInteraction, protectPlace } from "./events/protectionEvents.js";
 import { cleanupExpiredInvites } from "./services/inviteClanService.js";
 import { cleanupPendingClanPlacements, handleClanMarkerPlacement, trackClanMarkerUse } from "./services/markerPlacementService.js";
+import { handleEntityDeathPoints } from "./services/pointsService.js";
+import { updatePointsLeaderboardScoreboard } from "./services/pointsLeaderboardService.js";
 import { loadClans, loadInvites } from "./state/clanStore.js";
+import { loadPlayerPoints } from "./state/pointsStore.js";
 import { isClanCommandMessage } from "./utils/command.js";
 import { sendPlayerMessage } from "./utils/player.js";
 import { subscribeIfAvailable, runSafely } from "./utils/runtime.js";
 
 const CLAN_COMMAND_ACTION_ENUM = "clan:action";
-const CLAN_COMMAND_ACTIONS = ["help", "create", "invite", "accept", "leave", "ban", "upgrade", "flag", "info"];
+const CLAN_COMMAND_ACTIONS = ["help", "create", "invite", "accept", "leave", "ban", "upgrade", "flag", "info", "top", "ranking", "points", "score"];
 
 function getCustomCommandStatus() {
   return mc.CustomCommandStatus || { Success: 0, Failure: 1 };
@@ -173,12 +176,18 @@ export function initializeClanManager() {
   system.run(() => {
     runSafely("startup", loadClans);
     runSafely("startupInvites", loadInvites);
+    runSafely("startupPoints", loadPlayerPoints);
+    runSafely("startupPointsLeaderboard", updatePointsLeaderboardScoreboard);
   });
 
   system.runInterval(() => {
     runSafely("cleanupPendingClanPlacements", cleanupPendingClanPlacements);
     runSafely("cleanupExpiredInvites", cleanupExpiredInvites);
   }, CLAN_PENDING_TTL_TICKS);
+
+  system.runInterval(() => {
+    runSafely("refreshPointsLeaderboard", updatePointsLeaderboardScoreboard);
+  }, CLAN_POINTS_SCOREBOARD_REFRESH_TICKS);
 
   subscribeIfAvailable("subscribe.playerSpawn", world.afterEvents.playerSpawn, (event) => {
     system.run(() => {
@@ -189,6 +198,10 @@ export function initializeClanManager() {
   registerChatCommands();
   registerCustomSlashCommands();
   registerClanMarkerTracking();
+
+  subscribeIfAvailable("subscribe.entityDie.after", world.afterEvents.entityDie, (event) => {
+    handleEntityDeathPoints(event);
+  });
 
   subscribeIfAvailable("subscribe.playerPlaceBlock.after", world.afterEvents.playerPlaceBlock, (event) => {
     runSafely("playerPlaceBlock.after", () => {

@@ -5,31 +5,35 @@ import { leaveClan } from "../services/leaveClanService.js";
 import { canRequestClanMarker, giveClanMarker } from "../services/markerInventoryService.js";
 import { upgradeClanClaim } from "../services/upgradeClanService.js";
 import { showClaimOutlineIfNearPlayer } from "../services/claimOutlineService.js";
+import { getPointsLeaderboardMessages, updatePointsLeaderboardScoreboard } from "../services/pointsLeaderboardService.js";
 import { parseCommand } from "../utils/command.js";
 import { formatClaimCoordinates, formatClaimSize } from "../utils/claim.js";
 import { sendPlayerMessage } from "../utils/player.js";
 import { getClanByPlayer } from "../state/clanStore.js";
+import { getClanPoints, getPlayerPoints } from "../state/pointsStore.js";
 
 function showClanHelp(player) {
   sendPlayerMessage(
     player,
-    "Commands: /clan <action>, /clan:clan <action>, or !clan <action>. Actions: create <name>, invite <player>, accept, leave, ban <player>, upgrade, flag, info, help.",
+    "Commands: /clan <action>, /clan:clan <action>, or !clan <action>. Actions: create <name>, invite <player>, accept, leave, ban <player>, upgrade, flag, info, top, points, help.",
   );
 }
 
 function showClanInfo(player) {
   const clan = getClanByPlayer(player);
   if (!clan) {
-    sendPlayerMessage(player, "You are not part of a clan.");
+    sendPlayerMessage(player, `You are not part of a clan. Your points: ${getPlayerPoints(player)}.`);
     return;
   }
 
   const members = clan.members.join(", ");
   const bannedMembers = clan.bannedMembers.length > 0 ? clan.bannedMembers.join(", ") : "none";
+  const playerPoints = getPlayerPoints(player);
+  const clanPoints = getClanPoints(clan);
   if (!clan.claim) {
     sendPlayerMessage(
       player,
-      `Clan ${clan.name}. Owner: ${clan.ownerName}. Members: ${members}. Banned: ${bannedMembers}. Area not yet created.`,
+      `Clan ${clan.name}. Owner: ${clan.ownerName}. Members: ${members}. Banned: ${bannedMembers}. Your points: ${playerPoints}. Clan points: ${clanPoints}. Area not yet created.`,
     );
     return;
   }
@@ -41,8 +45,26 @@ function showClanInfo(player) {
 
   sendPlayerMessage(
     player,
-    `Clan ${clan.name}. Owner: ${clan.ownerName}. Members: ${members}. Banned: ${bannedMembers}. Area ${formatClaimSize(clan.claim)} in ${clan.claim.dimensionId} at coordinates ${formatClaimCoordinates(clan.claim)}.${outlineMessage}`,
+    `Clan ${clan.name}. Owner: ${clan.ownerName}. Members: ${members}. Banned: ${bannedMembers}. Your points: ${playerPoints}. Clan points: ${clanPoints}. Area ${formatClaimSize(clan.claim)} in ${clan.claim.dimensionId} at coordinates ${formatClaimCoordinates(clan.claim)}.${outlineMessage}`,
   );
+}
+
+function showPoints(player) {
+  const clan = getClanByPlayer(player);
+  const playerPoints = getPlayerPoints(player);
+  if (!clan) {
+    sendPlayerMessage(player, `Your points: ${playerPoints}. You are not part of a clan.`);
+    return;
+  }
+
+  sendPlayerMessage(player, `Your points: ${playerPoints}. Clan ${clan.name} points: ${getClanPoints(clan)}.`);
+}
+
+function showPointsLeaderboard(player) {
+  updatePointsLeaderboardScoreboard();
+  for (const message of getPointsLeaderboardMessages()) {
+    sendPlayerMessage(player, message);
+  }
 }
 
 function handleCreateClan(player, rawClanName) {
@@ -61,6 +83,7 @@ function handleCreateClan(player, rawClanName) {
     player,
     `Clan ${creation.clan.name} created. You received the flag to mark the 10x10 area on the ground.`,
   );
+  updatePointsLeaderboardScoreboard();
 }
 
 function handleInvite(player, rawTargetName) {
@@ -76,16 +99,23 @@ function handleAccept(player) {
   }
 
   sendPlayerMessage(player, `You joined the clan ${result.clan.name}.`);
+  updatePointsLeaderboardScoreboard();
 }
 
 function handleLeave(player) {
   const result = leaveClan(player);
   sendPlayerMessage(player, result.message);
+  if (result.ok) {
+    updatePointsLeaderboardScoreboard();
+  }
 }
 
 function handleBan(player, rawTargetName) {
   const result = banClanMember(player, rawTargetName);
   sendPlayerMessage(player, result.message);
+  if (result.ok) {
+    updatePointsLeaderboardScoreboard();
+  }
 }
 
 function handleUpgrade(player) {
@@ -156,6 +186,14 @@ export function executeClanCommand(player, message) {
       return true;
     case "info":
       showClanInfo(player);
+      return true;
+    case "top":
+    case "ranking":
+      showPointsLeaderboard(player);
+      return true;
+    case "points":
+    case "score":
+      showPoints(player);
       return true;
     default:
       sendPlayerMessage(player, "Unknown command. Use /clan help or !clan help.");
