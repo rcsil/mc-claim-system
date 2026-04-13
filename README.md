@@ -18,6 +18,12 @@ Point rules:
 - Dying removes 5 points, but a player cannot go below 0.
 - Clan points are calculated as the sum of the current members' points.
 
+Threat rules:
+
+- From 0 to 24 points, extra monsters can spawn near the player based on player level: level x 3, limited to 15 mobs.
+- From 25 to 30 points, infestation-level monster waves can spawn.
+- Above 30 points, infestation continues and special threats can randomly spawn.
+
 For worlds with cheats disabled, the command registration must include:
 
 - `permissionLevel: CustomCommandPermissionLevel.Any`

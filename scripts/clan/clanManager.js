@@ -1,13 +1,19 @@
 import { system, world } from "@minecraft/server";
 import * as mc from "@minecraft/server";
 
-import { CLAN_PENDING_TTL_TICKS, CLAN_POINTS_SCOREBOARD_REFRESH_TICKS } from "./config.js";
+import {
+  CLAN_PENDING_TTL_TICKS,
+  CLAN_POINTS_SCOREBOARD_REFRESH_TICKS,
+  CLAN_THREAT_SPAWN_INTERVAL_TICKS,
+  CLAN_THREAT_SPECIAL_UPDATE_INTERVAL_TICKS,
+} from "./config.js";
 import { executeClanCommand } from "./commands/clanCommands.js";
 import { protectBlockInteraction, protectBreak, protectEntityInteraction, protectPlace } from "./events/protectionEvents.js";
 import { cleanupExpiredInvites } from "./services/inviteClanService.js";
 import { cleanupPendingClanPlacements, handleClanMarkerPlacement, trackClanMarkerUse } from "./services/markerPlacementService.js";
 import { handleEntityDeathPoints } from "./services/pointsService.js";
 import { updatePointsLeaderboardScoreboard } from "./services/pointsLeaderboardService.js";
+import { updatePointThreatSpawns, updatePointThreatSpecials } from "./services/pointsThreatService.js";
 import { loadClans, loadInvites } from "./state/clanStore.js";
 import { loadPlayerPoints } from "./state/pointsStore.js";
 import { isClanCommandMessage } from "./utils/command.js";
@@ -188,6 +194,14 @@ export function initializeClanManager() {
   system.runInterval(() => {
     runSafely("refreshPointsLeaderboard", updatePointsLeaderboardScoreboard);
   }, CLAN_POINTS_SCOREBOARD_REFRESH_TICKS);
+
+  system.runInterval(() => {
+    runSafely("updatePointThreatSpawns", updatePointThreatSpawns);
+  }, CLAN_THREAT_SPAWN_INTERVAL_TICKS);
+
+  system.runInterval(() => {
+    runSafely("updatePointThreatSpecials", updatePointThreatSpecials);
+  }, CLAN_THREAT_SPECIAL_UPDATE_INTERVAL_TICKS);
 
   subscribeIfAvailable("subscribe.playerSpawn", world.afterEvents.playerSpawn, (event) => {
     system.run(() => {

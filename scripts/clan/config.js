@@ -25,6 +25,26 @@ export const CLAN_POINTS_LEADERBOARD_LIMIT = 5;
 export const CLAN_POINTS_SCOREBOARD_OBJECTIVE_ID = "clan_points_top";
 export const CLAN_POINTS_SCOREBOARD_DISPLAY_NAME = "Clan Points";
 export const CLAN_POINTS_SCOREBOARD_REFRESH_TICKS = 20 * 10;
+export const CLAN_THREAT_SPAWN_INTERVAL_TICKS = 20 * 25;
+export const CLAN_THREAT_SPECIAL_UPDATE_INTERVAL_TICKS = 20;
+export const CLAN_THREAT_MIN_DISTANCE = 12;
+export const CLAN_THREAT_MAX_DISTANCE = 24;
+export const CLAN_THREAT_DESPAWN_DISTANCE = 72;
+export const CLAN_THREAT_SPAWN_ATTEMPTS = 16;
+export const CLAN_THREAT_MAX_ACTIVE_NEAR_PLAYER = 18;
+export const CLAN_THREAT_INFESTATION_MIN_POINTS = 25;
+export const CLAN_THREAT_SPECIAL_MIN_POINTS = 31;
+export const CLAN_THREAT_LEVEL_SPAWN_MULTIPLIER = 3;
+export const CLAN_THREAT_LEVEL_SPAWN_LIMIT = 15;
+export const CLAN_THREAT_INFESTATION_SPAWN_COUNT = 6;
+export const CLAN_THREAT_SPECIAL_SPAWN_CHANCE = 0.25;
+export const CLAN_THREAT_SPECIAL_ATTACK_DAMAGE = 8;
+export const CLAN_THREAT_SPECIAL_ATTACK_RANGE = 4.5;
+export const CLAN_THREAT_SPECIAL_ATTACK_COOLDOWN_TICKS = 20 * 2;
+export const CLAN_THREAT_CREAKING_HEALTH = 100;
+export const CLAN_THREAT_COMMON_ENTITY_TYPES = ["minecraft:zombie", "minecraft:skeleton", "minecraft:spider"];
+export const CLAN_THREAT_INFESTATION_ENTITY_TYPES = ["minecraft:zombie", "minecraft:skeleton", "minecraft:spider", "minecraft:silverfish", "minecraft:endermite"];
+export const CLAN_THREAT_SPECIAL_ENTITY_TYPES = ["minecraft:vindicator", "minecraft:iron_golem", "minecraft:wither", "minecraft:creaking"];
 
 export const INTERACTIVE_BLOCK_IDS = new Set([
   "minecraft:crafting_table",
