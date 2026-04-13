@@ -4,6 +4,7 @@ import { invitePlayerToClan, acceptClanInvite } from "../services/inviteClanServ
 import { leaveClan } from "../services/leaveClanService.js";
 import { canRequestClanMarker, giveClanMarker } from "../services/markerInventoryService.js";
 import { upgradeClanClaim } from "../services/upgradeClanService.js";
+import { showClaimOutlineIfNearPlayer } from "../services/claimOutlineService.js";
 import { parseCommand } from "../utils/command.js";
 import { formatClaimCoordinates, formatClaimSize } from "../utils/claim.js";
 import { sendPlayerMessage } from "../utils/player.js";
@@ -33,9 +34,14 @@ function showClanInfo(player) {
     return;
   }
 
+  const outlineShown = showClaimOutlineIfNearPlayer(player, clan.claim);
+  const outlineMessage = outlineShown
+    ? " Foquinhos exibidos no limite da area."
+    : " Aproxime-se da area para ver os foquinhos.";
+
   sendPlayerMessage(
     player,
-    `Clan ${clan.name}. Owner: ${clan.ownerName}. Members: ${members}. Banned: ${bannedMembers}. Area ${formatClaimSize(clan.claim)} in ${clan.claim.dimensionId} at coordinates ${formatClaimCoordinates(clan.claim)}.`,
+    `Clan ${clan.name}. Owner: ${clan.ownerName}. Members: ${members}. Banned: ${bannedMembers}. Area ${formatClaimSize(clan.claim)} in ${clan.claim.dimensionId} at coordinates ${formatClaimCoordinates(clan.claim)}.${outlineMessage}`,
   );
 }
 
@@ -93,6 +99,7 @@ function handleUpgrade(player) {
     player,
     `The area of clan ${result.clan.name} is now ${formatClaimSize(result.clan.claim)}.`,
   );
+  showClaimOutlineIfNearPlayer(player, result.clan.claim);
 }
 
 function handleMarker(player) {
@@ -121,6 +128,8 @@ export function executeClanCommand(player, message) {
 
   switch (parsed.action) {
     case "":
+      showClanInfo(player);
+      return true;
     case "help":
       showClanHelp(player);
       return true;

@@ -11,6 +11,12 @@ export const CLAN_PENDING_TTL_TICKS = 10;
 export const CLAN_INVITE_TTL_TICKS = 20 * 60 * 5;
 export const MESSAGE_COOLDOWN_TICKS = 20;
 export const DEBUG_PREFIX = "[clan]";
+export const CLAN_CLAIM_OUTLINE_PARTICLE_ID = "minecraft:basic_flame_particle";
+export const CLAN_CLAIM_OUTLINE_DURATION_TICKS = 20 * 8;
+export const CLAN_CLAIM_OUTLINE_INTERVAL_TICKS = 10;
+export const CLAN_CLAIM_OUTLINE_MAX_DISTANCE = 64;
+export const CLAN_CLAIM_OUTLINE_MAX_PARTICLES = 160;
+export const CLAN_CLAIM_OUTLINE_Y_OFFSET = 0.15;
 
 export const INTERACTIVE_BLOCK_IDS = new Set([
   "minecraft:crafting_table",

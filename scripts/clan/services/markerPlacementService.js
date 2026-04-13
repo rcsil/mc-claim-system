@@ -9,6 +9,7 @@ import { isClanMarkerItem } from "../utils/item.js";
 import { getPlayerName, sendPlayerMessage } from "../utils/player.js";
 import { formatClaimSize } from "../utils/claim.js";
 import { runSafely } from "../utils/runtime.js";
+import { showClaimOutline } from "./claimOutlineService.js";
 
 function revertPlacedClanMarker(block, player, message) {
   runSafely("revertPlacedClanMarker", () => {
@@ -103,9 +104,10 @@ export function handleClanMarkerPlacement(event) {
   }
 
   deleteGenericMarkerOwner(playerName);
+  showClaimOutline(creation.clan.claim);
 
   sendPlayerMessage(
     event.player,
-    `Area do clan ${creation.clan.name} criada com sucesso em ${formatClaimSize(creation.clan.claim)}.`,
+    `Area do clan ${creation.clan.name} criada com sucesso em ${formatClaimSize(creation.clan.claim)}. Foquinhos exibidos no limite da area.`,
   );
 }
