@@ -1,0 +1,32 @@
+{
+  "format_version": 2,
+  "header": {
+    "name": "MC Clan Claim System",
+    "description": "Clan system for Minecraft Bedrock with 10x10 protected area claims.",
+    "uuid": "161937a3-289f-47cd-bfaf-6d2b2ad1e877",
+    "version": [1, 0, 2],
+    "min_engine_version": [1, 26, 1]
+  },
+  "modules": [
+    {
+      "description": "Behavior pack data for the clan claim system.",
+      "type": "data",
+      "uuid": "56c474a2-6626-49d3-b2bd-819d98de73ff",
+      "version": [1, 0, 2]
+    },
+    {
+      "description": "Script runtime for clan creation and area protection.",
+      "type": "script",
+      "language": "javascript",
+      "entry": "scripts/main.js",
+      "uuid": "46e7e6a5-b31d-4db8-94be-f6167bcfe73a",
+      "version": [1, 0, 2]
+    }
+  ],
+  "dependencies": [
+    {
+      "module_name": "@minecraft/server",
+      "version": "2.6.0"
+    }
+  ]
+}
