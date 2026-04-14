@@ -42,9 +42,20 @@ export const CLAN_THREAT_SPECIAL_ATTACK_DAMAGE = 8;
 export const CLAN_THREAT_SPECIAL_ATTACK_RANGE = 4.5;
 export const CLAN_THREAT_SPECIAL_ATTACK_COOLDOWN_TICKS = 20 * 2;
 export const CLAN_THREAT_CREAKING_HEALTH = 100;
+export const CLAN_THREAT_TAG = "clan_point_threat";
+export const CLAN_THREAT_SPECIAL_TAG = "clan_special_threat";
 export const CLAN_THREAT_COMMON_ENTITY_TYPES = ["minecraft:zombie", "minecraft:skeleton", "minecraft:spider"];
 export const CLAN_THREAT_INFESTATION_ENTITY_TYPES = ["minecraft:zombie", "minecraft:skeleton", "minecraft:spider", "minecraft:silverfish", "minecraft:endermite"];
 export const CLAN_THREAT_SPECIAL_ENTITY_TYPES = ["minecraft:vindicator", "minecraft:iron_golem", "minecraft:wither", "minecraft:creaking"];
+export const CLAN_RECALL_CLOCK_ITEM_ID = "clan:recall_clock";
+export const CLAN_RECALL_CLOCK_NAME = "Relogio de Retorno do Clan";
+export const CLAN_RECALL_CLOCK_LORE_KEY = "clan.recall_clock";
+export const CLAN_RECALL_CLOCK_ID_PROPERTY = "clan:recall_clock_id";
+export const CLAN_RECALL_CLOCKS_PROPERTY = "clan:recall_clocks";
+export const CLAN_RECALL_CLOCK_MAX_ACTIVE = 5;
+export const CLAN_RECALL_CLOCK_DROP_CHANCE = 0.021;
+export const CLAN_RECALL_CLOCK_SCAN_INTERVAL_TICKS = 20 * 30;
+export const CLAN_RECALL_CLOCK_USE_COOLDOWN_TICKS = 20 * 5;
 
 export const INTERACTIVE_BLOCK_IDS = new Set([
   "minecraft:crafting_table",

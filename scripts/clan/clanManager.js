@@ -4,6 +4,7 @@ import * as mc from "@minecraft/server";
 import {
   CLAN_PENDING_TTL_TICKS,
   CLAN_POINTS_SCOREBOARD_REFRESH_TICKS,
+  CLAN_RECALL_CLOCK_SCAN_INTERVAL_TICKS,
   CLAN_THREAT_SPAWN_INTERVAL_TICKS,
   CLAN_THREAT_SPECIAL_UPDATE_INTERVAL_TICKS,
 } from "./config.js";
@@ -14,6 +15,7 @@ import { cleanupPendingClanPlacements, handleClanMarkerPlacement, trackClanMarke
 import { handleEntityDeathPoints } from "./services/pointsService.js";
 import { updatePointsLeaderboardScoreboard } from "./services/pointsLeaderboardService.js";
 import { updatePointThreatSpawns, updatePointThreatSpecials } from "./services/pointsThreatService.js";
+import { handleRecallClockDrop, handleRecallClockUse, loadRecallClocks, reconcileRecallClocks } from "./services/recallClockService.js";
 import { loadClans, loadInvites } from "./state/clanStore.js";
 import { loadPlayerPoints } from "./state/pointsStore.js";
 import { isClanCommandMessage } from "./utils/command.js";
@@ -22,6 +24,7 @@ import { subscribeIfAvailable, runSafely } from "./utils/runtime.js";
 
 const CLAN_COMMAND_ACTION_ENUM = "clan:action";
 const CLAN_COMMAND_ACTIONS = ["help", "create", "invite", "accept", "leave", "ban", "upgrade", "flag", "info", "top", "ranking", "points", "score"];
+const CLAN_RECALL_CLOCK_COMPONENT_ID = "clan:recall_clock";
 
 function getCustomCommandStatus() {
   return mc.CustomCommandStatus || { Success: 0, Failure: 1 };
@@ -178,11 +181,38 @@ function registerCustomSlashCommands() {
   });
 }
 
+function registerRecallClockComponent() {
+  if (!system.beforeEvents || !system.beforeEvents.startup) {
+    return;
+  }
+
+  subscribeIfAvailable("subscribe.recallClockComponent.startup", system.beforeEvents.startup, (init) => {
+    const itemComponentRegistry = init.itemComponentRegistry;
+    if (!itemComponentRegistry || typeof itemComponentRegistry.registerCustomComponent !== "function") {
+      return;
+    }
+
+    itemComponentRegistry.registerCustomComponent(CLAN_RECALL_CLOCK_COMPONENT_ID, {
+      onUse: (event) => {
+        system.run(() => {
+          handleRecallClockUse(event);
+        });
+      },
+      onUseOn: (event) => {
+        system.run(() => {
+          handleRecallClockUse(event);
+        });
+      },
+    });
+  });
+}
+
 export function initializeClanManager() {
   system.run(() => {
     runSafely("startup", loadClans);
     runSafely("startupInvites", loadInvites);
     runSafely("startupPoints", loadPlayerPoints);
+    runSafely("startupRecallClocks", loadRecallClocks);
     runSafely("startupPointsLeaderboard", updatePointsLeaderboardScoreboard);
   });
 
@@ -203,6 +233,10 @@ export function initializeClanManager() {
     runSafely("updatePointThreatSpecials", updatePointThreatSpecials);
   }, CLAN_THREAT_SPECIAL_UPDATE_INTERVAL_TICKS);
 
+  system.runInterval(() => {
+    runSafely("reconcileRecallClocks", reconcileRecallClocks);
+  }, CLAN_RECALL_CLOCK_SCAN_INTERVAL_TICKS);
+
   subscribeIfAvailable("subscribe.playerSpawn", world.afterEvents.playerSpawn, (event) => {
     system.run(() => {
       sendPlayerMessage(event.player, "Use /clan create <name>, /clan:clan create <name> or !clan create <name> to create your clan and receive the flag.");
@@ -211,10 +245,20 @@ export function initializeClanManager() {
 
   registerChatCommands();
   registerCustomSlashCommands();
+  registerRecallClockComponent();
   registerClanMarkerTracking();
 
   subscribeIfAvailable("subscribe.entityDie.after", world.afterEvents.entityDie, (event) => {
     handleEntityDeathPoints(event);
+    handleRecallClockDrop(event);
+  });
+
+  subscribeIfAvailable("subscribe.itemUse.after", world.afterEvents.itemUse, (event) => {
+    handleRecallClockUse(event);
+  });
+
+  subscribeIfAvailable("subscribe.itemUseOnRecall.after", world.afterEvents.itemUseOn, (event) => {
+    handleRecallClockUse(event);
   });
 
   subscribeIfAvailable("subscribe.playerPlaceBlock.after", world.afterEvents.playerPlaceBlock, (event) => {

@@ -20,14 +20,14 @@ import {
   CLAN_THREAT_SPECIAL_ENTITY_TYPES,
   CLAN_THREAT_SPECIAL_MIN_POINTS,
   CLAN_THREAT_SPECIAL_SPAWN_CHANCE,
+  CLAN_THREAT_SPECIAL_TAG,
+  CLAN_THREAT_TAG,
 } from "../config.js";
 import { getPlayerPoints } from "../state/pointsStore.js";
 import { getPlayerName } from "../utils/player.js";
 import { runSafely } from "../utils/runtime.js";
 import { sendRateLimitedMessage } from "./notifications.js";
 
-const THREAT_TAG = "clan_point_threat";
-const SPECIAL_THREAT_TAG = "clan_special_threat";
 const activeSpecialThreats = new Map();
 
 function getHealthComponent(entity) {
@@ -137,7 +137,7 @@ function countActiveThreatsNearPlayer(player) {
     return player.dimension.getEntities({
       location: player.location,
       maxDistance: CLAN_THREAT_DESPAWN_DISTANCE,
-      tags: [THREAT_TAG],
+      tags: [CLAN_THREAT_TAG],
     }).length;
   }) ?? 0;
 }
@@ -170,14 +170,14 @@ function prepareThreatEntity(entity, player, options = {}) {
     return;
   }
 
-  runSafely("pointsThreat.addTag", () => entity.addTag(THREAT_TAG));
+  runSafely("pointsThreat.addTag", () => entity.addTag(CLAN_THREAT_TAG));
 
   if (!options.special) {
     return;
   }
 
   const playerName = getPlayerName(player);
-  runSafely("pointsThreat.addSpecialTag", () => entity.addTag(SPECIAL_THREAT_TAG));
+  runSafely("pointsThreat.addSpecialTag", () => entity.addTag(CLAN_THREAT_SPECIAL_TAG));
   runSafely("pointsThreat.lookAt", () => entity.lookAt(player.location));
 
   if (options.typeId === "minecraft:creaking") {

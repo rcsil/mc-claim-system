@@ -1,0 +1,18 @@
+{
+  "format_version": 2,
+  "header": {
+    "name": "MC Clan Claim System Resources",
+    "description": "Resource pack for MC Clan Claim System custom item textures.",
+    "uuid": "9eea8e84-294a-4d78-8c0c-83c95ee92fb3",
+    "version": [1, 0, 1],
+    "min_engine_version": [1, 26, 1]
+  },
+  "modules": [
+    {
+      "description": "Textures for MC Clan Claim System.",
+      "type": "resources",
+      "uuid": "77df1fb2-699e-4e52-a36a-e687bdcfc45d",
+      "version": [1, 0, 1]
+    }
+  ]
+}

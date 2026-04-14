@@ -24,6 +24,14 @@ Threat rules:
 - From 25 to 30 points, infestation-level monster waves can spawn.
 - Above 30 points, infestation continues and special threats can randomly spawn.
 
+Recall clock rules:
+
+- Special threats from the 31+ points tier have a 2.1% chance to drop a Relogio de Retorno do Clan.
+- Only 5 recall clocks can exist in the active world at once.
+- If a recall clock disappears from online inventories or dropped items, the slot is freed for a future drop.
+- The clock is a custom item (`clan:recall_clock`) with its own resource pack texture.
+- Using the clock teleports the player to their bed spawn point.
+
 For worlds with cheats disabled, the command registration must include:
 
 - `permissionLevel: CustomCommandPermissionLevel.Any`
